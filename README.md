@@ -6,7 +6,7 @@ An AI-powered multi-class image classification system built using MobileNetV2, F
 
 Frontend Application:
 
-https://your-frontend-url.onrender.com
+[https://your-frontend-url.onrender.com](https://ai-image-classification-frontend.onrender.com/)
 
 Backend API:
 
