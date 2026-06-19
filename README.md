@@ -2,7 +2,36 @@
 
 An AI-powered multi-class image classification system built using MobileNetV2, FastAPI, Streamlit, and TensorFlow.
 
-## 🚀 Features
+## 🚀 Live Demo
+
+Frontend Application:
+
+https://your-frontend-url.onrender.com
+
+Backend API:
+
+https://ai-image-classification-system-j3uz.onrender.com
+
+API Documentation:
+
+https://ai-image-classification-system-j3uz.onrender.com/docs
+
+Model Repository:
+
+https://huggingface.co/Ghanshyam51/image_classification_mobilenetv2
+
+---
+
+## 📂 Classes
+
+* 👕 Clothing (Attire)
+* 🎈 Decoration & Signage
+* 🍔 Food
+* 📦 Miscellaneous
+
+---
+
+## ✨ Features
 
 * Upload images and get instant predictions
 * MobileNetV2 Transfer Learning Model
@@ -11,14 +40,9 @@ An AI-powered multi-class image classification system built using MobileNetV2, F
 * Confidence Score Visualization
 * Class Probability Chart
 * Prediction History Tracking
-* Render Deployment Ready
+* Cloud Deployment using Render
 
-## 📂 Classes
-
-* 👕 Clothing (Attire)
-* 🎈 Decoration & Signage
-* 🍔 Food
-* 📦 Miscellaneous
+---
 
 ## 🛠️ Tech Stack
 
@@ -31,6 +55,9 @@ An AI-powered multi-class image classification system built using MobileNetV2, F
 * NumPy
 * Pillow
 * Render
+* Hugging Face
+
+---
 
 ## 📊 Model Information
 
@@ -39,6 +66,8 @@ An AI-powered multi-class image classification system built using MobileNetV2, F
 * Classes: 4
 * Dataset Size: 5,983 Images
 * Validation Accuracy: 73.18%
+
+---
 
 ## 📁 Project Structure
 
@@ -52,6 +81,8 @@ frontend/
 * app.py
 * requirements.txt
 
+---
+
 ## ▶️ Run Locally
 
 Backend:
@@ -62,14 +93,24 @@ Frontend:
 
 streamlit run app.py
 
+---
+
 ## 🌐 Deployment
 
 Backend: Render
 
 Frontend: Render
 
+Model Storage: Hugging Face
+
+---
+
 ## 👨‍💻 Author
 
 Ghanshyam Prajapati
 
-Aspiring Data Analyst & Machine Learning Engineer
+Aspiring Data Analyst | Machine Learning Engineer
+
+GitHub:
+
+https://github.com/Ghanshyam51
