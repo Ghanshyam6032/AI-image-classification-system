@@ -2,8 +2,19 @@ import streamlit as st
 import requests
 from PIL import Image
 import pandas as pd
+import os
 
-API_URL = "https://ai-image-classification-system-j3uz.onrender.com/predict"
+API_URL = os.getenv(
+    "API_URL",
+    "https://ai-image-classification-system-j3uz.onrender.com/predict"
+)
+
+CLASS_LABELS = {
+    "Attire": "👕 Clothing",
+    "Decorationandsignage": "🎈 Decoration & Signage",
+    "Food": "🍔 Food",
+    "misc": "📦 Miscellaneous"
+}
 
 st.set_page_config(
     page_title="AI Image Classification",
@@ -13,18 +24,27 @@ st.set_page_config(
 
 # Sidebar
 with st.sidebar:
-    st.title("🤖 Model Info")
-    st.info("""
-    Model: MobileNetV2
-    
-    Classes:
-    - Attire
-    - Decoration & Signage
-    - Food
-    - Misc
-    
-    Accuracy: 73.18%
-    Dataset Size: 5,983 Images
+
+    st.title("🤖 AI Model Information")
+
+    st.success("MobileNetV2")
+
+    st.markdown("""
+    ### Dataset Statistics
+
+    📷 Images : 5,983
+
+    🏷 Classes : 4
+
+    ### Categories
+
+    👕 Clothing
+
+    🎈 Decoration & Signage
+
+    🍔 Food
+
+    📦 Miscellaneous
     """)
 
 # Header
@@ -32,7 +52,8 @@ st.markdown("""
 <h1 style='text-align:center;'>
 🖼️ AI Image Classification System
 </h1>
-<p style='text-align:center;'>
+
+<p style='text-align:center; font-size:18px;'>
 Upload an image and let AI classify it instantly
 </p>
 """, unsafe_allow_html=True)
@@ -46,7 +67,7 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file:
 
-    col1, col2 = st.columns([1,1])
+    col1, col2 = st.columns([1, 1])
 
     with col1:
 
@@ -60,9 +81,9 @@ if uploaded_file:
 
         st.markdown("### 📋 Image Details")
 
-        st.write(f"Width : {img.width}px")
-        st.write(f"Height : {img.height}px")
-        st.write(f"Format : {img.format}")
+        st.write(f"📏 Width : {img.width}px")
+        st.write(f"📐 Height : {img.height}px")
+        st.write(f"🖼 Format : {img.format}")
 
     with col2:
 
@@ -80,32 +101,57 @@ if uploaded_file:
 
                 response = requests.post(
                     API_URL,
-                    files=files
+                    files=files,
+                    timeout=60
                 )
 
                 if response.status_code == 200:
 
                     result = response.json()
 
+                    prediction = result["prediction"]
+
+                    pred_label = CLASS_LABELS.get(
+                        prediction,
+                        prediction
+                    )
+
+                    confidence = result["confidence"]
+
                     st.success("✅ Prediction Complete")
 
-                    st.markdown("## 🎯 Prediction")
+                    st.markdown("## 🎯 Prediction Result")
 
                     st.metric(
-                        label="Class",
-                        value=result["prediction"]
+                        "Prediction",
+                        pred_label
                     )
 
                     st.metric(
-                        label="Confidence",
-                        value=f"{result['confidence']}%"
+                        "Confidence",
+                        f"{confidence}%"
                     )
 
                     st.progress(
-                        min(result["confidence"]/100,1.0)
+                        min(confidence / 100, 1.0)
                     )
 
-                    st.markdown("### 📊 Class Probabilities")
+                    if confidence >= 90:
+                        st.success(
+                            "Very High Confidence"
+                        )
+                    elif confidence >= 70:
+                        st.info(
+                            "Good Confidence"
+                        )
+                    else:
+                        st.warning(
+                            "Low Confidence"
+                        )
+
+                    st.markdown(
+                        "### 📊 Class Probabilities"
+                    )
 
                     df = pd.DataFrame(
                         result["all_predictions"].items(),
@@ -115,6 +161,10 @@ if uploaded_file:
                         ]
                     )
 
+                    df["Class"] = df["Class"].map(
+                        CLASS_LABELS
+                    )
+
                     df = df.sort_values(
                         by="Probability",
                         ascending=False
@@ -122,27 +172,39 @@ if uploaded_file:
 
                     st.dataframe(
                         df,
-                        use_container_width=True
+                        use_container_width=True,
+                        hide_index=True
                     )
 
                     st.bar_chart(
                         df.set_index("Class")
                     )
 
-                    # History
+                    # Prediction History
                     if "history" not in st.session_state:
                         st.session_state.history = []
 
-                    st.session_state.history.append({
-                        "Image": uploaded_file.name,
-                        "Prediction": result["prediction"],
-                        "Confidence": result["confidence"]
-                    })
+                    st.session_state.history.append(
+                        {
+                            "Image":
+                            uploaded_file.name,
+
+                            "Prediction":
+                            pred_label,
+
+                            "Confidence":
+                            confidence
+                        }
+                    )
 
                 else:
 
                     st.error(
                         f"Backend Error ({response.status_code})"
+                    )
+
+                    st.write(
+                        response.text
                     )
 
             except Exception as e:
@@ -152,11 +214,16 @@ if uploaded_file:
                 )
 
 # History Section
-if "history" in st.session_state and len(st.session_state.history) > 0:
+if (
+    "history" in st.session_state
+    and len(st.session_state.history) > 0
+):
 
     st.markdown("---")
 
-    st.subheader("📜 Prediction History")
+    st.subheader(
+        "📜 Prediction History"
+    )
 
     history_df = pd.DataFrame(
         st.session_state.history
@@ -169,6 +236,12 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
 
 st.markdown("---")
 
-st.caption(
-    "🚀 Powered by MobileNetV2 + FastAPI + Streamlit"
+st.markdown(
+"""
+<center>
+🚀 Built with MobileNetV2, FastAPI,
+Streamlit and Render
+</center>
+""",
+unsafe_allow_html=True
 )
