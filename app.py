@@ -3,7 +3,7 @@ import requests
 from PIL import Image
 import pandas as pd
 
-API_URL = "http://127.0.0.1:8000/predict"
+API_URL = "https://ai-image-classification-system-j3uz.onrender.com/predict"
 
 st.set_page_config(
     page_title="AI Image Classification",
